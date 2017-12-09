@@ -32,6 +32,14 @@ public class Minimax {
         }
 
 
+        public int utility(int[][] board, int player){
+                if(player == Othello.BLACK)
+                        return heuristic2(board, player);
+                else
+                        return heuristic3(board, player);
+        }
+
+
         /*
         * Positional Heuristic
         * Static weight associated to each board position
@@ -128,20 +136,13 @@ public class Minimax {
                 return numberOfOwnDisks - numberOfOpponentDisks;
         }
 
-        public int calculateValue(int[][] board, int player){
-                if(player == Othello.BLACK)
-                        return heuristic2(board, player);
-                else
-                        return heuristic1(board, player);
-        }
-
         public Pair<Pair<Integer, Integer>, Integer> minimaxFunc(int[][] board, int depth, int player){
                 if(depth == maxDepth)
-                        return new Pair(new Pair(), calculateValue(board, player));
+                        return new Pair(new Pair(), utility(board, player));
                 else{
                         ArrayList<Pair<Integer, Integer>> moves = othello.validMoves(board, player);
                         if(moves.size() == 0)
-                                return new Pair(new Pair(), calculateValue(board, player));
+                                return new Pair(new Pair(), utility(board, player));
                         else{
                                 int bestScore = Integer.MIN_VALUE;
                                 Pair<Integer, Integer> bestMove = new Pair();
@@ -161,11 +162,11 @@ public class Minimax {
 
         public Pair<Pair<Integer, Integer>, Integer> minimaxWithAlphaBeta(int[][] board, int depth, int player, boolean isMaximizingPlayer, int alpha, int beta){
                 if(depth == maxDepth)
-                        return new Pair(new Pair(), calculateValue(board, player));
+                        return new Pair(new Pair(), utility(board, player));
 
                 ArrayList<Pair<Integer, Integer>> moves = othello.validMoves(board, player);
                 if(moves.size() == 0)
-                        return new Pair(new Pair(), calculateValue(board, player));
+                        return new Pair(new Pair(), utility(board, player));
 
                 if(isMaximizingPlayer){
                         int bestScore = Integer.MIN_VALUE;
@@ -182,7 +183,10 @@ public class Minimax {
                                         alpha = bestScore;
                                 }
 
-                                if(beta <= alpha){
+                                /*
+                                * If alpha is greater than beta, return alpha
+                                * */
+                                if(alpha >= beta){
                                         break;
                                 }
 
@@ -204,6 +208,9 @@ public class Minimax {
                                         beta = bestScore;
                                 }
 
+                                /*
+                                * If beta is less than alpha, return beta
+                                * */
                                 if(beta <= alpha){
                                         break;
                                 }

@@ -119,6 +119,7 @@ public class Othello {
                 boolean ret = true;
                 int loopCounter = 0;
                 int numberOfDisksOppositePlayerHas = 0;
+                boolean lastDiskBelongsToThisPlayer = false;
                 while(true) {
                         // update the x, y coordinate
                         nowPosition.setLeft(nowPosition.getLeft() + directions[dirIndex][0]);
@@ -160,9 +161,11 @@ public class Othello {
                         if(color != player) {
                                 ret = false;
                                 numberOfDisksOppositePlayerHas++;
+                                lastDiskBelongsToThisPlayer = false;
                         }
                         else {
                                 ret = true;
+                                lastDiskBelongsToThisPlayer = true;
                         }
 
                         loopCounter++;
@@ -225,8 +228,8 @@ public class Othello {
                         printBoard(nowPlayer);
 
                         if(hasValidMoves(board, nowPlayer) == false){
-                                System.out.println("this player doesn't have a valid move now");
-                                Thread.sleep(2000);
+                                System.out.println(playerToString(nowPlayer) + " doesn't have a valid move now");
+                                //Thread.sleep(2000);
                                 continue;
                         }
 
@@ -273,7 +276,7 @@ public class Othello {
         private void finalizeGameStats() {
                 long endTime   = System.currentTimeMillis();
                 long totalTime = endTime - startTime;
-                System.out.println("Total time needed : " + totalTime);
+                System.out.println("Total time needed : " + totalTime / 1000.0 + "s");
 
                 int numWhites = 0, numBlacks = 0;
                 for (int i = 0; i < this.board.length; i++) {
