@@ -5,7 +5,7 @@ public class Minimax {
         private int[][] board;
         private Othello othello;
 
-        private int maxDepth = 20;
+        private int maxDepth = 7;
 
 
         /**
@@ -21,6 +21,14 @@ public class Minimax {
                         System.arraycopy(src[i], 0, target[i], 0, src[i].length);
                 }
                 return target;
+        }
+
+
+        public int changeThisPlayer(int player){
+                if(player == Othello.BLACK)
+                        return Othello.WHITE;
+                else
+                        return Othello.BLACK;
         }
 
 
@@ -165,7 +173,7 @@ public class Minimax {
                         for(Pair<Integer, Integer>nowPos: moves){
                                 int[][] tempBoard = cloneArray(board);
                                 othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
-                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, player, false, alpha, beta);
+                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, changeThisPlayer(player), false, alpha, beta);
                                 if(found.getRight() > bestScore){
                                         bestScore = found.getRight();
                                         bestMove = new Pair(nowPos);
@@ -187,7 +195,7 @@ public class Minimax {
                         for(Pair<Integer, Integer>nowPos: moves){
                                 int[][] tempBoard = cloneArray(board);
                                 othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
-                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, player, true, alpha, beta);
+                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, changeThisPlayer(player), true, alpha, beta);
                                 if(found.getRight() < bestScore){
                                         bestScore = found.getRight();
                                         bestMove = new Pair(nowPos);
