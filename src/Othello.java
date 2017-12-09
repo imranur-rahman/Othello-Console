@@ -17,6 +17,8 @@ public class Othello {
 
         public boolean[] isThisPlayerComputer = new boolean[2];
 
+        private long startTime;
+
         /*
         * input: length is an even number
         * goal: create the initial state of the game
@@ -215,6 +217,7 @@ public class Othello {
 
         public void playGame() throws InterruptedException {
                 nowPlayer = WHITE;
+                initializeGameStats();
                 while(isFinished(board) == false){
 
                         changePlayer();
@@ -231,12 +234,13 @@ public class Othello {
                         if(checkIfThisPlayerIsComputer(nowPlayer)){
 
                                 //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, nowPlayer);
-                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, -100000, 100000);
+                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, -1000, 1000);
                                 Pair desiredMove = new Pair(result.getLeft());
 
                                 makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
 
-                                System.out.println("Computer plays this player");
+                                System.out.println("Computer plays " + playerToString(nowPlayer));
+                                System.out.print("Desired move from computer is : ");
                                 desiredMove.print();
                         }
                         else{
@@ -250,8 +254,48 @@ public class Othello {
 
                                 makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
                         }
+                        printBoard(nowPlayer);
+                }
+                finalizeGameStats();
+        }
+
+        private String playerToString(int nowPlayer) {
+                if(nowPlayer == WHITE)
+                        return "WHITE";
+                else
+                        return "BLACK";
+        }
+
+        private void initializeGameStats() {
+                startTime = System.currentTimeMillis();
+        }
+
+        private void finalizeGameStats() {
+                long endTime   = System.currentTimeMillis();
+                long totalTime = endTime - startTime;
+                System.out.println("Total time needed : " + totalTime);
+
+                int numWhites = 0, numBlacks = 0;
+                for (int i = 0; i < this.board.length; i++) {
+                        for (int j = 0; j < this.board.length; j++) {
+                                if (this.board[i][j] == WHITE) {
+                                        numWhites++;
+                                } else if (this.board[i][j] == BLACK) {
+                                        numBlacks++;
+                                }
+                        }
+                }
+                if(numWhites > numBlacks){
+                        System.out.println("Winner is WHITE");
+                }
+                else if(numBlacks > numWhites){
+                        System.out.println("Winner is BLACK");
+                }
+                else{
+                        System.out.println("The game is drawn");
                 }
         }
+
 
         /**
          * This method prints the board to the console

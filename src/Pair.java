@@ -33,7 +33,7 @@ public class Pair<L,R> {
         }
 
         public void print(){
-                System.out.println(left.toString() + " " + right.toString());
+                System.out.println( "(" + left.toString() + ", " + right.toString() + ")" );
         }
 
         @Override
