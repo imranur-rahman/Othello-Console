@@ -5,6 +5,8 @@ public class Minimax {
         private int[][] board;
         private Othello othello;
 
+        private int maxDepth = 20;
+
 
         /**
          * Clones the provided array
@@ -118,24 +120,27 @@ public class Minimax {
                 return numberOfOwnDisks - numberOfOpponentDisks;
         }
 
-        public int minimaxValue(int[][] board, int player){
-                return heuristic1(board, player);
+        public int calculateValue(int[][] board, int player){
+                if(player == Othello.BLACK)
+                        return heuristic2(board, player);
+                else
+                        return heuristic1(board, player);
         }
 
-        public Pair<Pair<Integer, Integer>, Integer> minimaxFunc(int[][] board, int depth, int maxDepth, int player){
+        public Pair<Pair<Integer, Integer>, Integer> minimaxFunc(int[][] board, int depth, int player){
                 if(depth == maxDepth)
-                        return new Pair(new Pair(), minimaxValue(board, player));
+                        return new Pair(new Pair(), calculateValue(board, player));
                 else{
                         ArrayList<Pair<Integer, Integer>> moves = othello.validMoves(board, player);
                         if(moves.size() == 0)
-                                return new Pair(new Pair(), minimaxValue(board, player));
+                                return new Pair(new Pair(), calculateValue(board, player));
                         else{
                                 int bestScore = Integer.MIN_VALUE;
                                 Pair<Integer, Integer> bestMove = new Pair();
                                 for(Pair<Integer, Integer>nowPos: moves){
                                         int[][] tempBoard = cloneArray(board);
                                         othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
-                                        Pair<Pair<Integer, Integer>, Integer> found = minimaxFunc(tempBoard, depth + 1, maxDepth, player);
+                                        Pair<Pair<Integer, Integer>, Integer> found = minimaxFunc(tempBoard, depth + 1, player);
                                         if(found.getRight() > bestScore){
                                                 bestScore = found.getRight();
                                                 bestMove = new Pair(nowPos);
@@ -144,6 +149,68 @@ public class Minimax {
                                 return new Pair(bestMove, bestScore);
                         }
                 }
+        }
+
+        public Pair<Pair<Integer, Integer>, Integer> minimaxWithAlphaBeta(int[][] board, int depth, int player, boolean isMaximizingPlayer, int alpha, int beta){
+                if(depth == maxDepth)
+                        return new Pair(new Pair(), calculateValue(board, player));
+
+                ArrayList<Pair<Integer, Integer>> moves = othello.validMoves(board, player);
+                if(moves.size() == 0)
+                        return new Pair(new Pair(), calculateValue(board, player));
+
+                if(isMaximizingPlayer){
+                        int bestScore = Integer.MIN_VALUE;
+                        Pair<Integer, Integer> bestMove = new Pair();
+                        for(Pair<Integer, Integer>nowPos: moves){
+                                int[][] tempBoard = cloneArray(board);
+                                othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
+                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, player, false, alpha, beta);
+                                if(found.getRight() > bestScore){
+                                        bestScore = found.getRight();
+                                        bestMove = new Pair(nowPos);
+                                }
+                                if(bestScore > alpha){
+                                        alpha = bestScore;
+                                }
+
+                                if(beta <= alpha){
+                                        break;
+                                }
+
+                        }
+                        return new Pair(bestMove, bestScore);
+                }
+                else{
+                        int bestScore = Integer.MAX_VALUE;
+                        Pair<Integer, Integer> bestMove = new Pair();
+                        for(Pair<Integer, Integer>nowPos: moves){
+                                int[][] tempBoard = cloneArray(board);
+                                othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
+                                Pair<Pair<Integer, Integer>, Integer> found = minimaxWithAlphaBeta(tempBoard, depth + 1, player, true, alpha, beta);
+                                if(found.getRight() < bestScore){
+                                        bestScore = found.getRight();
+                                        bestMove = new Pair(nowPos);
+                                }
+                                if(bestScore < beta){
+                                        beta = bestScore;
+                                }
+
+                                if(beta <= alpha){
+                                        break;
+                                }
+
+                        }
+                        return new Pair(bestMove, bestScore);
+                }
+        }
+
+        public int getMaxDepth() {
+                return maxDepth;
+        }
+
+        public void setMaxDepth(int maxDepth) {
+                this.maxDepth = maxDepth;
         }
 
         public Minimax(int[][] board, Othello othello){

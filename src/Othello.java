@@ -230,7 +230,8 @@ public class Othello {
 
                         if(checkIfThisPlayerIsComputer(nowPlayer)){
 
-                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, 7, nowPlayer);
+                                //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, nowPlayer);
+                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, 100000, -100000);
                                 Pair desiredMove = new Pair(result.getLeft());
 
                                 makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
@@ -340,7 +341,6 @@ public class Othello {
                 minimax = new Minimax(game.board, game);
                 game.setMode(args);
                 game.playGame();
-                //game.printBoard(0);
         }
 
 
