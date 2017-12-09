@@ -5,7 +5,7 @@ public class Minimax {
         private int[][] board;
         private Othello othello;
 
-        private int maxDepth = 7;
+        private int maxDepth = 12;
 
 
         /**
