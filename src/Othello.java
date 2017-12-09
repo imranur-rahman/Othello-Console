@@ -11,8 +11,11 @@ public class Othello {
 
         public int[][] board;
         public int length;
+        public static Minimax minimax;
 
         public int nowPlayer = BLACK;
+
+        public boolean[] isThisPlayerComputer = new boolean[2];
 
         /*
         * input: length is an even number
@@ -33,33 +36,33 @@ public class Othello {
                 board[mid][mid] = WHITE;
         }
 
-        public boolean isValid(int row, int col, int player) {
+        public boolean isValid(int[][] board, int row, int col, int player) {
                 /*
                 * If this position has a valid move in any direction for this player
                 * then this position is valid for this player
                 * */
                 for(int dirIndex = 0; dirIndex < directions.length; ++dirIndex){
-                        if(hasValidMoveInThisDir(player, dirIndex, new Pair(row, col)))
+                        if(hasValidMoveInThisDir(board, player, dirIndex, new Pair(row, col)))
                                 return true;
                 }
                 return false;
         }
 
-        public boolean hasValidMoves(int player) {
-                ArrayList<Pair<Integer, Integer>> moves = validMoves(player);
+        public boolean hasValidMoves(int[][] board, int player) {
+                ArrayList<Pair<Integer, Integer>> moves = validMoves(board, player);
                 return (moves.size() != 0);
         }
 
-        public void makeMove(int row, int col, int player) {
+        public void makeMove(int[][] board, int row, int col, int player) {
                 for(int dirIndex = 0; dirIndex < directions.length; ++dirIndex){
-                        if(hasValidMoveInThisDir(player, dirIndex, new Pair(row, col)))
-                                flipInThisDirection(player, dirIndex, new Pair(row, col));
+                        if(hasValidMoveInThisDir(board, player, dirIndex, new Pair(row, col)))
+                                flipInThisDirection(board, player, dirIndex, new Pair(row, col));
                 }
-                setElementInBoard(new Pair(row, col), player);
+                setElementInBoard(board, new Pair(row, col), player);
         }
 
-        public void flipInThisDirection(int player, int dirIndex, Pair<Integer, Integer>nowPosition){
-                System.out.println("flipInThisDirection : " + player + " " + dirIndex);
+        public void flipInThisDirection(int[][] board, int player, int dirIndex, Pair<Integer, Integer>nowPosition){
+                //System.out.println("flipInThisDirection : " + player + " " + dirIndex);
                 while(true) {
                         // update the x, y coordinate
                         nowPosition.setLeft(nowPosition.getLeft() + directions[dirIndex][0]);
@@ -77,7 +80,7 @@ public class Othello {
                         * If this position is empty
                         * return 'ret', our job is done
                         * */
-                        if(getElementFromBoard(nowPosition) == NONE){
+                        if(getElementFromBoard(board, nowPosition) == NONE){
                                 return;
                         }
 
@@ -86,14 +89,14 @@ public class Othello {
                         * If the element is not possessed by the current player
                         * make it possessed by the current player
                         * */
-                        if(getElementFromBoard(nowPosition) != player)
-                                setElementInBoard(nowPosition, player);
+                        if(getElementFromBoard(board, nowPosition) != player)
+                                setElementInBoard(board, nowPosition, player);
 
                 }
         }
 
-        public boolean isFinished(){
-                return hasValidMoves(BLACK) == false && hasValidMoves(WHITE) == false;
+        public boolean isFinished(int[][] board){
+                return hasValidMoves(board, BLACK) == false && hasValidMoves(board, WHITE) == false;
         }
 
         public boolean isInBoard(Pair<Integer, Integer>pos){
@@ -101,15 +104,15 @@ public class Othello {
                         pos.getRight() >= 0 && pos.getRight() < length;
         }
 
-        public int getElementFromBoard(Pair<Integer, Integer>nowPos){
+        public int getElementFromBoard(int[][] board, Pair<Integer, Integer>nowPos){
                 return board[nowPos.getLeft()][nowPos.getRight()];
         }
 
-        public void setElementInBoard(Pair<Integer, Integer>nowPos, int color){
+        public void setElementInBoard(int[][] board, Pair<Integer, Integer>nowPos, int color){
                 board[nowPos.getLeft()][nowPos.getRight()] = color;
         }
 
-        public boolean hasValidMoveInThisDir(int player, int dirIndex, Pair<Integer, Integer>nowPosition){
+        public boolean hasValidMoveInThisDir(int[][] board, int player, int dirIndex, Pair<Integer, Integer>nowPosition){
                 //System.out.println("hasValidMoveInThisDir : " + player + " " + dirIndex);
                 boolean ret = true;
                 int loopCounter = 0;
@@ -136,7 +139,7 @@ public class Othello {
                         * If this position is empty
                         * return 'ret' (according to last cell)
                         * */
-                        if(getElementFromBoard(nowPosition) == NONE){
+                        if(getElementFromBoard(board, nowPosition) == NONE){
                                 return (ret && numberOfDisksOppositePlayerHas > 0);
                         }
 
@@ -151,7 +154,7 @@ public class Othello {
                         * Because when we return a true, it must have a non-zero value
                         * */
 
-                        int color = getElementFromBoard(nowPosition);
+                        int color = getElementFromBoard(board, nowPosition);
                         if(color != player) {
                                 ret = false;
                                 numberOfDisksOppositePlayerHas++;
@@ -164,7 +167,7 @@ public class Othello {
                 }
         }
 
-        public ArrayList<Pair<Integer, Integer>> validMoves(int player){
+        public ArrayList<Pair<Integer, Integer>> validMoves(int[][] board, int player){
 
                 ArrayList<Pair<Integer, Integer>>ret = new ArrayList<>();
 
@@ -174,7 +177,7 @@ public class Othello {
                                 if(board[row][col] == NONE){
                                         for(int dir = 0; dir < directions.length; ++dir){
 
-                                                if(hasValidMoveInThisDir(player, dir, new Pair(row, col))){
+                                                if(hasValidMoveInThisDir(board, player, dir, new Pair(row, col))){
                                                         ret.add(new Pair(row, col));
                                                 }
                                         }
@@ -212,28 +215,40 @@ public class Othello {
 
         public void playGame() throws InterruptedException {
                 nowPlayer = WHITE;
-                while(isFinished() == false){
+                while(isFinished(board) == false){
 
                         changePlayer();
 
                         printBoard(nowPlayer);
 
-                        if(hasValidMoves(nowPlayer) == false){
+                        if(hasValidMoves(board, nowPlayer) == false){
                                 System.out.println("this player doesn't have a valid move now");
                                 Thread.sleep(2000);
                                 continue;
                         }
 
 
-                        Pair desiredMove;
-                        while(true){
-                                desiredMove = getMovePosition();
-                                if(isValid((int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer) == true)
-                                        break;
-                                System.out.println("your input is not valid");
-                        }
+                        if(checkIfThisPlayerIsComputer(nowPlayer)){
 
-                        makeMove((int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
+                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, 7, nowPlayer);
+                                Pair desiredMove = new Pair(result.getLeft());
+
+                                makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
+
+                                System.out.println("Computer plays this player");
+                                desiredMove.print();
+                        }
+                        else{
+                                Pair desiredMove;
+                                while(true){
+                                        desiredMove = getMovePosition();
+                                        if(isValid(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer) == true)
+                                                break;
+                                        System.out.println("your input is not valid");
+                                }
+
+                                makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);
+                        }
                 }
         }
 
@@ -265,7 +280,7 @@ public class Othello {
                                         System.out.printf(" X |");
                                         numBlacks++;
                                 }
-                                else if (isValid(i, j, turn)) {
+                                else if (isValid(board, i, j, turn)) {
                                         System.out.printf(" * |");
                                 }
                                 else {
@@ -282,7 +297,38 @@ public class Othello {
                 }
                 System.out.println("Black: " + numBlacks + " - " + "White: " + numWhites);
                 System.out.println();
+        }
 
+        /*
+        * 1. player vs player
+        * 2. player vs computer
+        * 3. computer vs computer
+        * */
+        public void setMode(String[] args){
+                if(args.length > 0){
+                        if(args[0].equals("1")){
+                                isThisPlayerComputer[0] = false;
+                                isThisPlayerComputer[1] = false;
+                        }
+                        else if(args[0].equals("2")){
+                                isThisPlayerComputer[0] = false;
+                                isThisPlayerComputer[1] = true;
+                        }
+                        else if(args[0].equals("3")){
+                                isThisPlayerComputer[0] = true;
+                                isThisPlayerComputer[1] = true;
+                        }
+                }
+                else{
+                        System.out.println("enter a mode to play");
+                }
+        }
+
+        /*
+        * @input: BLACK or WHITE
+        * */
+        public boolean checkIfThisPlayerIsComputer(int player){
+                return isThisPlayerComputer[player - 1];
         }
 
         /**
@@ -291,6 +337,8 @@ public class Othello {
          */
         public static void main(String[] args) throws InterruptedException {
                 Othello game = new Othello(8);
+                minimax = new Minimax(game.board, game);
+                game.setMode(args);
                 game.playGame();
                 //game.printBoard(0);
         }
