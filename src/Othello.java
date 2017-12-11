@@ -55,6 +55,10 @@ public class Othello {
                 return (moves.size() != 0);
         }
 
+        public void removeMove(int[][] board, int row, int col){
+                setElementInBoard(board, new Pair(row, col), NONE);
+        }
+
         public void makeMove(int[][] board, int row, int col, int player) {
                 for(int dirIndex = 0; dirIndex < directions.length; ++dirIndex){
                         if(hasValidMoveInThisDir(board, player, dirIndex, new Pair(row, col)))
@@ -80,9 +84,17 @@ public class Othello {
 
                         /*
                         * If this position is empty
-                        * return 'ret', our job is done
+                        * then return, our job is done
                         * */
                         if(getElementFromBoard(board, nowPosition) == NONE){
+                                return;
+                        }
+
+                        /*
+                        * If we have found one of this player's disk
+                        * then return
+                        * */
+                        if(getElementFromBoard(board, nowPosition) == player){
                                 return;
                         }
 
@@ -164,8 +176,11 @@ public class Othello {
                                 lastDiskBelongsToThisPlayer = false;
                         }
                         else {
+                                /*
                                 ret = true;
                                 lastDiskBelongsToThisPlayer = true;
+                                */
+                                return (numberOfDisksOppositePlayerHas > 0);
                         }
 
                         loopCounter++;
@@ -237,7 +252,9 @@ public class Othello {
                         if(checkIfThisPlayerIsComputer(nowPlayer)){
 
                                 //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, nowPlayer);
-                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, -1000, 1000);
+                                //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.iterativeDeepeningDepthFirstSearchWithAlphaBetaPruning(board, nowPlayer, 5000);
+
                                 Pair desiredMove = new Pair(result.getLeft());
 
                                 makeMove(board, (int)desiredMove.getLeft(), (int)desiredMove.getRight(), nowPlayer);

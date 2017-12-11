@@ -32,10 +32,6 @@ public class Pair<L,R> {
                 return ret;
         }
 
-        public int manhattanDistance(Pair<L, R>other){
-                return Math.abs((int)this.left - (int)other.left) + Math.abs((int)this.right - (int)other.right);
-        }
-
         public void print(){
                 System.out.println( "(" + left.toString() + ", " + right.toString() + ")" );
         }

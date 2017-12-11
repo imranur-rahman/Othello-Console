@@ -220,6 +220,30 @@ public class Minimax {
                 }
         }
 
+        public Pair<Pair<Integer, Integer>, Integer> iterativeDeepeningDepthFirstSearchWithAlphaBetaPruning(int[][] board, int player, long timeLimit){
+
+                Pair<Pair<Integer, Integer>, Integer> best = new Pair(new Pair(), Integer.MIN_VALUE);
+
+                long startTime = System.currentTimeMillis();
+                long endTime = startTime + timeLimit;
+
+
+                for (int depth = 1; depth < Integer.MAX_VALUE; ++depth){
+
+                        long currentTime = System.currentTimeMillis();
+                        if(currentTime >= endTime)
+                                break;
+
+                        maxDepth = depth;
+                        Pair<Pair<Integer, Integer>, Integer> now = minimaxWithAlphaBeta(board, 0, player, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                        if(now.getRight() > best.getRight()) {
+                                best = now;
+                        }
+                }
+
+                return best;
+        }
+
         public int getMaxDepth() {
                 return maxDepth;
         }
