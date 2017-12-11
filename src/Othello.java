@@ -165,19 +165,14 @@ public class Othello {
                         * */
 
                         int color = getElementFromBoard(board, nowPosition);
+
                         if(color != player) {
-                                //ret = false;
                                 numberOfDisksOppositePlayerHas++;
                                 lastDiskBelongsToThisPlayer = false;
                         }
                         else {
-                                /*
-                                ret = true;
-                                lastDiskBelongsToThisPlayer = true;
-                                */
                                 return (numberOfDisksOppositePlayerHas > 0);
                         }
-
                 }
         }
 

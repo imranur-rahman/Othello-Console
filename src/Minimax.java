@@ -136,30 +136,6 @@ public class Minimax {
                 return numberOfOwnDisks - numberOfOpponentDisks;
         }
 
-        public Pair<Pair<Integer, Integer>, Integer> minimaxFunc(int[][] board, int depth, int player){
-                if(depth == maxDepth)
-                        return new Pair(new Pair(), utility(board, player));
-                else{
-                        ArrayList<Pair<Integer, Integer>> moves = othello.validMoves(board, player);
-                        if(moves.size() == 0)
-                                return new Pair(new Pair(), utility(board, player));
-                        else{
-                                int bestScore = Integer.MIN_VALUE;
-                                Pair<Integer, Integer> bestMove = new Pair();
-                                for(Pair<Integer, Integer>nowPos: moves){
-                                        int[][] tempBoard = cloneArray(board);
-                                        othello.makeMove(tempBoard, nowPos.getLeft(), nowPos.getRight(), player);
-                                        Pair<Pair<Integer, Integer>, Integer> found = minimaxFunc(tempBoard, depth + 1, player);
-                                        if(found.getRight() > bestScore){
-                                                bestScore = found.getRight();
-                                                bestMove = new Pair(nowPos);
-                                        }
-                                }
-                                return new Pair(bestMove, bestScore);
-                        }
-                }
-        }
-
         public Pair<Pair<Integer, Integer>, Integer> minimaxWithAlphaBeta(int[][] board, int depth, int player, boolean isMaximizingPlayer, int alpha, int beta){
                 if(depth == maxDepth)
                         return new Pair(new Pair(), utility(board, player));
