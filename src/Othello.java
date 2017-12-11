@@ -128,8 +128,6 @@ public class Othello {
 
         public boolean hasValidMoveInThisDir(int[][] board, int player, int dirIndex, Pair<Integer, Integer>nowPosition){
                 //System.out.println("hasValidMoveInThisDir : " + player + " " + dirIndex);
-                boolean ret = true;
-                int loopCounter = 0;
                 int numberOfDisksOppositePlayerHas = 0;
                 boolean lastDiskBelongsToThisPlayer = false;
                 while(true) {
@@ -144,10 +142,7 @@ public class Othello {
                         * */
                         //loopCounter may be unnecessary here
                         if(isInBoard(nowPosition) == false) {
-                                if(loopCounter == 0)
-                                        return false;
-                                else
-                                        return (ret && numberOfDisksOppositePlayerHas > 0);
+                                return (lastDiskBelongsToThisPlayer && numberOfDisksOppositePlayerHas > 0);
                         }
 
                         /*
@@ -155,7 +150,7 @@ public class Othello {
                         * return 'ret' (according to last cell)
                         * */
                         if(getElementFromBoard(board, nowPosition) == NONE){
-                                return (ret && numberOfDisksOppositePlayerHas > 0);
+                                return (lastDiskBelongsToThisPlayer && numberOfDisksOppositePlayerHas > 0);
                         }
 
                         /*
@@ -171,7 +166,7 @@ public class Othello {
 
                         int color = getElementFromBoard(board, nowPosition);
                         if(color != player) {
-                                ret = false;
+                                //ret = false;
                                 numberOfDisksOppositePlayerHas++;
                                 lastDiskBelongsToThisPlayer = false;
                         }
@@ -183,7 +178,6 @@ public class Othello {
                                 return (numberOfDisksOppositePlayerHas > 0);
                         }
 
-                        loopCounter++;
                 }
         }
 
@@ -253,7 +247,7 @@ public class Othello {
 
                                 //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxFunc(board, 0, nowPlayer);
                                 //Pair<Pair<Integer, Integer>, Integer> result = this.minimax.minimaxWithAlphaBeta(board, 0, nowPlayer, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
-                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.iterativeDeepeningDepthFirstSearchWithAlphaBetaPruning(board, nowPlayer, 5000);
+                                Pair<Pair<Integer, Integer>, Integer> result = this.minimax.iterativeDeepeningDepthFirstSearchWithAlphaBetaPruning(board, nowPlayer, 500);
 
                                 Pair desiredMove = new Pair(result.getLeft());
 
